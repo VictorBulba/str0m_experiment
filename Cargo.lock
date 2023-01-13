@@ -178,7 +178,7 @@ dependencies = [
 [[package]]
 name = "dtls"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "net",
  "openssl",
@@ -370,7 +370,7 @@ dependencies = [
 [[package]]
 name = "ice"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "net",
  "rand",
@@ -383,6 +383,12 @@ name = "itoa"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fad582f4b9e86b6caa621cabeb0963332d92eea04729ab12892c2533951e6440"
+
+[[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
@@ -432,7 +438,7 @@ dependencies = [
 [[package]]
 name = "net"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "crc",
  "hmac",
@@ -440,6 +446,16 @@ dependencies = [
  "sha-1",
  "thiserror",
  "tracing",
+]
+
+[[package]]
+name = "nu-ansi-term"
+version = "0.46.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77a8165726e8236064dbb45459242600304b42a5ea24ee2948e18e023bf7ba84"
+dependencies = [
+ "overload",
+ "winapi",
 ]
 
 [[package]]
@@ -508,9 +524,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "overload"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
+
+[[package]]
 name = "packet"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "rand",
  "rtp",
@@ -626,7 +648,7 @@ dependencies = [
 [[package]]
 name = "rtp"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "dtls",
  "hmac",
@@ -655,7 +677,7 @@ checksum = "7b4b9743ed687d4b4bcedf9ff5eaa7398495ae14e61cba0a295704edbc7decde"
 [[package]]
 name = "sctp"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "sctp-proto",
  "thiserror",
@@ -664,23 +686,24 @@ dependencies = [
 
 [[package]]
 name = "sctp-proto"
-version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "700c40abfd6f8d009eaedebb35453e43fd83587a69746e27ce381c83c83828dc"
 dependencies = [
  "bytes",
  "crc",
  "fxhash",
+ "log",
  "rand",
  "slab",
  "thiserror",
  "tinyvec",
- "tracing",
 ]
 
 [[package]]
 name = "sdp"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "combine",
  "dtls",
@@ -755,6 +778,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sharded-slab"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "900fba806f70c630b0a382d0d825e17a0f19fcd059a2ade1ff237bcddf446b31"
+dependencies = [
+ "lazy_static",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -762,6 +794,12 @@ checksum = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "smallvec"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
 name = "socket2"
@@ -776,7 +814,7 @@ dependencies = [
 [[package]]
 name = "str0m"
 version = "0.1.0"
-source = "git+https://github.com/algesten/str0m?rev=f7e71c2#f7e71c2fabd030bc185bfc1cfefe25b1ed7c6b02"
+source = "git+https://github.com/algesten/str0m?rev=5cc27e4#5cc27e420ce3b3ba97cf10c99cf9d9b739f365ae"
 dependencies = [
  "bitvec",
  "dtls",
@@ -801,6 +839,8 @@ dependencies = [
  "serde",
  "str0m",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -850,6 +890,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "thread_local"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5516c27b78311c50bf42c071425c560ac799b11c30b31f87e3081965fe5e0180"
+dependencies = [
+ "once_cell",
 ]
 
 [[package]]
@@ -972,6 +1021,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "24eb03ba0eab1fd845050058ce5e616558e8f8d8fca633e6b163fe25c797213a"
 dependencies = [
  "once_cell",
+ "valuable",
+]
+
+[[package]]
+name = "tracing-log"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78ddad33d2d10b1ed7eb9d1f518a5674713876e97e5bb9b7345a7984fbb4f922"
+dependencies = [
+ "lazy_static",
+ "log",
+ "tracing-core",
+]
+
+[[package]]
+name = "tracing-subscriber"
+version = "0.3.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6176eae26dd70d0c919749377897b54a9276bd7061339665dd68777926b5a70"
+dependencies = [
+ "nu-ansi-term",
+ "sharded-slab",
+ "smallvec",
+ "thread_local",
+ "tracing-core",
+ "tracing-log",
 ]
 
 [[package]]
@@ -991,6 +1066,12 @@ name = "unicode-ident"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "84a22b9f218b40614adcb3f4ff08b703773ad44fa9423e4e0d346d5db86e4ebc"
+
+[[package]]
+name = "valuable"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
 name = "vcpkg"

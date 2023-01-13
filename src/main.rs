@@ -1,11 +1,11 @@
 use axum::response::Html;
 use axum::routing::{get, post};
 use axum::{Json, Router};
-use sdp::{Codec, MediaAttribute};
+use std::io::ErrorKind;
+use std::net::UdpSocket;
 use std::time::Instant;
 use str0m::net::Receive;
 use str0m::{Answer, Candidate, Event, IceConnectionState, Input, Offer, Output, Rtc};
-use tokio::net::UdpSocket;
 
 pub(crate) struct WebrtcStream {
     rtc: Rtc,
@@ -13,26 +13,26 @@ pub(crate) struct WebrtcStream {
 }
 
 impl WebrtcStream {
-    pub(crate) async fn new(offer: Offer) -> (Self, Answer) {
+    pub(crate) fn new(offer: Offer) -> (Self, Answer) {
         let rtc_config = Rtc::builder().clear_codecs().enable_h264();
 
         let mut rtc = rtc_config.build();
 
-        let socket = UdpSocket::bind("0.0.0.0:0").await.unwrap();
+        let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
         let addr = socket.local_addr().unwrap();
         println!("Using socket: {addr:?}");
 
         let candidate = Candidate::host(addr).unwrap();
         rtc.add_local_candidate(candidate);
 
-        for m in &offer.media_lines {
-            for attr in &m.attrs {
-                match attr {
-                    MediaAttribute::RtpMap(c) if c.codec == Codec::H264 => println!("{c:?}"),
-                    _ => (),
-                }
-            }
-        }
+        // for m in &offer.media_lines {
+        //     for attr in &m.attrs {
+        //         match attr {
+        //             MediaAttribute::RtpMap(c) if c.codec == Codec::H264 => println!("{c:?}"),
+        //             _ => (),
+        //         }
+        //     }
+        // }
 
         let answer = rtc.accept_offer(offer).unwrap();
 
@@ -51,7 +51,8 @@ impl WebrtcStream {
                 Output::Timeout(v) => v,
 
                 Output::Transmit(v) => {
-                    socket.send_to(&v.contents, v.destination).await.unwrap();
+                    println!("Transmit");
+                    socket.send_to(&v.contents, v.destination).unwrap();
                     continue;
                 }
 
@@ -74,32 +75,35 @@ impl WebrtcStream {
             };
 
             let timeout = timeout - Instant::now();
+            // let timeout = Duration::from_millis(500);
+            tracing::info!("timeout: {:?}", timeout);
 
             if timeout.is_zero() {
                 rtc.handle_input(Input::Timeout(Instant::now())).unwrap();
                 continue;
             }
 
-            let sleep = tokio::time::sleep(timeout);
-
+            socket.set_read_timeout(Some(timeout)).unwrap();
             buf.resize(2000, 0);
 
-            let input = tokio::select! {
-                s = socket.recv_from(&mut buf) => match s {
-                    Ok((n, source)) => {
-                        buf.truncate(n);
-                        Input::Receive(
-                            Instant::now(),
-                            Receive {
-                                source,
-                                destination: socket.local_addr().unwrap(),
-                                contents: buf.as_slice().try_into().unwrap(),
-                            },
-                        )
-                    }
-                    Err(e) => panic!("Socket reading error: {e}"),
+            let input = match socket.recv_from(&mut buf) {
+                Ok((n, source)) => {
+                    buf.truncate(n);
+                    Input::Receive(
+                        Instant::now(),
+                        Receive {
+                            source,
+                            destination: socket.local_addr().unwrap(),
+                            contents: buf.as_slice().try_into().unwrap(),
+                        },
+                    )
+                }
+
+                Err(e) => match e.kind() {
+                    // Expected error for set_read_timeout(). One for windows, one for the rest.
+                    ErrorKind::WouldBlock | ErrorKind::TimedOut => Input::Timeout(Instant::now()),
+                    _ => panic!("Socket reading error: {e}"),
                 },
-                _ = sleep => Input::Timeout(Instant::now())
             };
 
             rtc.handle_input(input).unwrap();
@@ -109,6 +113,10 @@ impl WebrtcStream {
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::TRACE)
+        .init();
+
     let app = Router::new()
         .route("/", get(serve_page))
         .route("/make_session", post(make_session));
@@ -138,7 +146,7 @@ struct AnswerResp {
 
 async fn make_session(Json(offer_req): Json<OfferReq>) -> Json<AnswerResp> {
     let offer = Offer::from_sdp_string(&offer_req.offer).unwrap();
-    let (webrtc_stream, answer) = WebrtcStream::new(offer).await;
+    let (webrtc_stream, answer) = WebrtcStream::new(offer);
     tokio::spawn(async {
         webrtc_stream.run().await;
     });

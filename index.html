@@ -21,9 +21,9 @@
         };
         let counter = 0;
         setInterval(() => {
-            if (dc.readyState != 'open') {
-                return;
-            }
+            // if (dc.readyState != 'open') {
+            //     return;
+            // }
             dc.send(`Counter ${counter}`);
             counter++;
         }, 1000);
