@@ -1,0 +1,13 @@
+[package]
+name = "str0m_experiment"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+str0m = { git = "https://github.com/algesten/str0m", rev = "f7e71c2" }
+sdp = { git = "https://github.com/algesten/str0m", rev = "f7e71c2" }
+tokio = { version = "1", features = ["rt-multi-thread", "time", "macros"] }
+axum = "0.6"
+serde = { version = "*", features = ["derive"] }

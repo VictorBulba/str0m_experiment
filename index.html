@@ -1,0 +1,77 @@
+<html lang="en">
+
+<body>
+    <video style="width: 100%; height: 100%;"  id="remote-video" controls autoplay muted playsinline></video>
+</body>
+
+<script>
+    async function main() {
+        const remoteVideo = document.querySelector('#remote-video');
+
+        let pc = new RTCPeerConnection({
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        });
+
+        let dc = pc.createDataChannel("dc");
+        dc.onopen = () => {
+            console.log("DC opened");
+        };
+        dc.onclose = () => {
+            console.log("DC closed");
+        };
+        let counter = 0;
+        setInterval(() => {
+            if (dc.readyState != 'open') {
+                return;
+            }
+            dc.send(`Counter ${counter}`);
+            counter++;
+        }, 1000);
+
+        pc.oniceconnectionstatechange = e => console.log('STATE', pc.iceConnectionState);
+        
+        pc.ontrack = track => {
+            console.log("TRACK", track);
+            remoteVideo.srcObject = track.streams[0]
+            remoteVideo.play()
+        };
+
+        let transceiver = pc.addTransceiver('video', {'direction': 'recvonly'});
+
+        let offer = await new Promise((accept, reject) => {
+            pc.onicecandidate = evt => {
+                if (!evt.candidate) { // ICE Gathering finished 
+                    const { sdp: offer } = pc.localDescription;
+                    accept(offer);
+                }
+            }
+            pc.createOffer()
+                .then(ld => pc.setLocalDescription(ld))
+                .catch(reject)
+        });
+
+        console.log("OFFER", offer);
+
+        let resp = await fetch("/make_session", {
+            method: 'POST',
+            body: JSON.stringify({ offer }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        let answer = await resp.json().then(j => j.answer);
+        console.log("ANSWER", answer)
+
+        await pc.setRemoteDescription(new RTCSessionDescription({
+            sdp: answer,
+            type: 'answer'
+        }));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        main()
+    })
+</script>
+
+</html>
