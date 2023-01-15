@@ -16,16 +16,18 @@
         dc.onopen = () => {
             console.log("DC opened");
         };
+        dc.onmessage = msg => {
+            console.log("DC msg:", msg);
+        };
         dc.onclose = () => {
             console.log("DC closed");
         };
-        let counter = 0;
+    
         setInterval(() => {
-            // if (dc.readyState != 'open') {
-            //     return;
-            // }
-            dc.send(`Counter ${counter}`);
-            counter++;
+            if (dc.readyState != 'open') {
+                return;
+            }
+            dc.send("ping");
         }, 1000);
 
         pc.oniceconnectionstatechange = e => console.log('STATE', pc.iceConnectionState);
@@ -36,7 +38,7 @@
             remoteVideo.play()
         };
 
-        let transceiver = pc.addTransceiver('video', {'direction': 'recvonly'});
+        let transceiver = pc.addTransceiver('video', {'direction': 'sendrecv'});
 
         let offer = await new Promise((accept, reject) => {
             pc.onicecandidate = evt => {
